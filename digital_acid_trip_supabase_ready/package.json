@@ -1,0 +1,9 @@
+{
+  "name": "digital-acid-trip-planner-supabase-ready",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hyperglitch planner ready for Supabase Storage upload and optional cloud sync.",
+  "scripts": {
+    "serve": "python -m http.server 4173 -d dist"
+  }
+}
