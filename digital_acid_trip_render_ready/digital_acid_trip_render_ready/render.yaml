@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: digital-acid-trip-planner
+    runtime: static
+    buildCommand: npm run build:static
+    staticPublishPath: ./dist
+    previews:
+      generation: automatic
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: sameorigin
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate

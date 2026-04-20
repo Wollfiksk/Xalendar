@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: digital-acid-trip-planner-web
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /

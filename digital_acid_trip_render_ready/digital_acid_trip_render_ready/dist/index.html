@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Acid Trip Planner // Render Ready</title>
+  <meta name="description" content="Hyperglitch planner připravený na deploy do Render jako static site, s rave UI a export/import snapshotů." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Baloo+2:wght@500;700;800&family=Audiowide&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="liquid-bg" aria-hidden="true"></canvas>
+  <div class="backdrop-orbs" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+    <span class="orb orb-d"></span>
+  </div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <header class="hero glass panel-glow">
+      <div class="hero-copy-wrap">
+        <p class="eyebrow">DIGITAL ACID TRIP / RENDER READY</p>
+        <h1 data-text="Neon planner připravený na deploy do Renderu.">Neon planner připravený na deploy do Renderu.</h1>
+        <p class="hero-copy">
+          Hyperglitch UI, izometrické kalendářové město, pulzující úkoly a deploy preset vrstva,
+          aby to šlo bez drama hodit na Render jako static site nebo případně jako Node web service.
+        </p>
+        <div class="hero-statuses">
+          <div class="status-chip"><span>MODE</span><strong>STATIC + CDN</strong></div>
+          <div class="status-chip"><span>SIGNAL</span><strong id="signalReadout">93%</strong></div>
+          <div class="status-chip"><span>CHAOS</span><strong id="chaosReadout">72%</strong></div>
+          <div class="status-chip"><span>DEPLOY</span><strong id="syncReadout">READY</strong></div>
+        </div>
+      </div>
+
+      <div class="control-deck glass-sub">
+        <div class="control-row buttons-row">
+          <button id="shuffleScene" class="pill">Přelít scénu</button>
+          <button id="togglePulse" class="pill pill-alt">128 BPM ON</button>
+          <button id="toggleHyper" class="pill pill-danger">HYPERGLITCH OFF</button>
+        </div>
+        <div class="control-row sliders-row">
+          <label class="control-block">
+            <span>Chaos Drive</span>
+            <input id="chaosDrive" type="range" min="20" max="100" value="72" />
+          </label>
+          <label class="control-block">
+            <span>BPM</span>
+            <input id="bpmDrive" type="range" min="96" max="168" value="128" />
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <section class="sync-panel glass panel-glow">
+      <div class="panel-head sync-head">
+        <div>
+          <p class="eyebrow">RENDER DEPLOY LAYER</p>
+          <h2>Preset pro Render deploy bez suppa chaosu</h2>
+          <p class="sync-copy">Vyplň název služby a branch, ulož preset a jedním klikem si zkopíruj <code>render.yaml</code>. Appka sama běží čistě staticky, takže doporučený deploy je Static Site.</p>
+        </div>
+        <div class="live-badge connected" id="connectionBadge">STATIC READY</div>
+      </div>
+
+      <div class="sync-grid">
+        <label>
+          <span>Service Name</span>
+          <input id="renderServiceName" type="text" placeholder="digital-acid-trip-planner" autocomplete="off" />
+        </label>
+        <label>
+          <span>Git Branch</span>
+          <input id="renderBranch" type="text" placeholder="main" autocomplete="off" />
+        </label>
+        <label>
+          <span>Publish Path</span>
+          <input id="renderPublishPath" type="text" placeholder="./dist" autocomplete="off" />
+        </label>
+        <label class="switch-row">
+          <span>Build Command</span>
+          <input id="renderBuildCommand" type="text" placeholder="npm run build:static" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="sync-actions">
+        <button id="savePreset" class="pill">Uložit preset</button>
+        <button id="copyRenderYaml" class="pill pill-alt">Kopírovat render.yaml</button>
+        <button id="exportSnapshot" class="pill pill-ghost">Export snapshot</button>
+        <button id="importSnapshot" class="pill pill-ghost">Import snapshot</button>
+        <button id="resetDemo" class="pill pill-danger">Reset demo</button>
+      </div>
+      <input id="importFileInput" type="file" accept="application/json" hidden />
+      <p id="syncStatus" class="sync-status">Projekt je připravený na Render Static Site. V repu je i volitelný Node server pro Web Service variantu.</p>
+    </section>
+
+    <main class="dashboard">
+      <section class="panel glass panel-glow calendar-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">IZOMETRICKÝ KALENDÁŘ</p>
+            <h2>Týdenní město / rave district</h2>
+          </div>
+          <div class="panel-badge live-badge">LIVE DISTORTION</div>
+        </div>
+        <div id="calendarCity" class="calendar-city" aria-label="Isometrický týdenní kalendář"></div>
+      </section>
+
+      <section class="panel glass panel-glow todo-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">TO-DO / LIVING OBJECTS</p>
+            <h2>Úkoly jako pulzující entity</h2>
+          </div>
+          <form id="todoForm" class="todo-form">
+            <input id="todoInput" type="text" placeholder="Dropni task do chaosu..." maxlength="64" />
+            <select id="priorityInput">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+            <button type="submit" class="pill">+</button>
+          </form>
+        </div>
+        <div id="todoList" class="todo-list"></div>
+      </section>
+
+      <section class="panel glass panel-glow planner-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">PLANNER / MIXER TIMELINE</p>
+            <h2>Mixážní pult času</h2>
+          </div>
+          <div class="mixer-readout">
+            <span>SYNC</span>
+            <strong id="mixerLevel">73%</strong>
+          </div>
+        </div>
+        <div class="planner-grid">
+          <div class="time-axis">
+            <span>08:00</span>
+            <span>10:00</span>
+            <span>12:00</span>
+            <span>14:00</span>
+            <span>16:00</span>
+            <span>18:00</span>
+          </div>
+          <div id="mixerTimeline" class="mixer-timeline"></div>
+        </div>
+      </section>
+
+      <section class="panel glass panel-glow spectrum-panel">
+        <div class="panel-head compact-head">
+          <div>
+            <p class="eyebrow">SYSTEM AURA / REACTIVE FIELD</p>
+            <h2>Živý spektrální meter</h2>
+          </div>
+        </div>
+        <div id="spectrumBars" class="spectrum-bars" aria-hidden="true"></div>
+      </section>
+    </main>
+  </div>
+
+  <template id="todoTemplate">
+    <article class="todo-card">
+      <div class="todo-halo"></div>
+      <button class="todo-toggle" aria-label="Označit úkol"></button>
+      <div class="todo-copy">
+        <h3></h3>
+        <p></p>
+        <div class="todo-wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="todo-side">
+        <span class="todo-priority"></span>
+        <span class="todo-energy"></span>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

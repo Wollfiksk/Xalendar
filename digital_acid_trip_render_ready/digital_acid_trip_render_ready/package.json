@@ -1,0 +1,12 @@
+{
+  "name": "digital-acid-trip-planner-render-ready",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hyperglitch planner ready for Render static-site deploys, with optional Node fallback.",
+  "scripts": {
+    "build:static": "node scripts/render-build.js",
+    "build": "npm run build:static",
+    "start": "node server.js",
+    "preview": "node server.js"
+  }
+}
